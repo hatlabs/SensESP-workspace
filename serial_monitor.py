@@ -68,7 +68,12 @@ def read_loop(fd, timeout):
             ready, _, _ = select.select([fd], [], [], 0.5)
             if not ready:
                 continue
-            data = os.read(fd, 4096)
+            try:
+                data = os.read(fd, 4096)
+            except BlockingIOError:
+                # select() can spuriously report readable on a non-blocking
+                # tty; no data is actually available yet.
+                continue
             if not data:
                 continue
             buf += data
