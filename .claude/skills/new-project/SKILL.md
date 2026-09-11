@@ -80,7 +80,7 @@ Present the spec to the user and ask for confirmation before proceeding.
 ## Phase 4: Project Creation
 
 1. Create the project directory: `projects/<name>/`
-2. Copy `platformio.ini` from `ref/SensESP-project-template/` and customize for the target board.
+2. Copy `ref/SensESP-project-template/` (`platformio.ini`, `sdkconfig.defaults`, `sdkconfig.defaults.esp32c3`, `min_spiffs.csv`, `CMakeLists.txt`, `src/CMakeLists.txt`, `src/idf_component.yml`) and set `default_envs` to the board's `<board>_espidf` env. See `docs/WORKFLOW.md` Phase 5.
 3. Create `src/main.cpp` with a basic SensESP skeleton appropriate for their use case. Study the relevant reference examples in `ref/` for patterns.
 4. Create `JOURNAL.md` work journal (see `docs/WORKFLOW.md` "Work Journal" section for format). Record the current session name and log completed phases.
 5. Initialize a git repo: `git init` in the project directory.
