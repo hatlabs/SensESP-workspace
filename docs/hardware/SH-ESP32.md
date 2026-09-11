@@ -103,7 +103,7 @@ Add `adafruit/Adafruit ADS1X15` if using an external ADC, or `adafruit/Adafruit 
 ## Common Use Cases
 
 ### Engine Monitor with Add-on Board
-Pair with an ADS1115 ADC breakout on I2C for analog inputs (oil pressure, temperature, fuel level). Add digital inputs for RPM/tacho via the opto input or GPIO header. See `ref/SH-ESP32-engine-hat-firmware`.
+Pair with an ADS1115 ADC breakout on I2C for analog inputs (oil pressure, temperature, fuel level). Add digital inputs for RPM/tacho via the opto input or GPIO header. Start from the template's `shesp32_espidf` env; `ref/HALMET-example-firmware` shows the ADS1115 scaling and tacho counting code, with HALMET's pin numbers.
 
 ### Temperature Monitoring
 Connect DS18B20 sensors to the 1-Wire bus. Multiple sensors supported on the same wire. Simple and reliable for engine room, exhaust, and water temperature.
