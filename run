@@ -245,10 +245,24 @@ function repos:pull {
     fi
 
     echo "  Updating $name..."
-    if (cd "ref/$name" && git pull --depth 1 origin "$branch" 2>/dev/null); then
+    # repos:clone makes shallow clones; a shallow clone cannot fast-forward
+    # once the remote branch moves past its graft point, so the first update
+    # fetches the full history. Later updates are plain fast-forwards.
+    # (A string, not an array: bash 3.2 rejects an empty array under nounset.)
+    local unshallow=""
+    if [[ "$(git -C "ref/$name" rev-parse --is-shallow-repository)" == "true" ]]; then
+      unshallow="--unshallow"
+    fi
+    local current
+    current=$(git -C "ref/$name" branch --show-current 2>/dev/null || true)
+    if ! git -C "ref/$name" fetch $unshallow origin "$branch" 2>/dev/null; then
+      echo "    WARNING: Failed to fetch $name."
+    elif [[ "$current" != "$branch" ]]; then
+      echo "    WARNING: $name is on branch '$current', not '$branch'; fetched, not merged."
+    elif git -C "ref/$name" merge --ff-only FETCH_HEAD >/dev/null 2>&1; then
       echo "    Done."
     else
-      echo "    WARNING: Failed to update $name."
+      echo "    WARNING: Failed to fast-forward $name."
     fi
   done
 }
