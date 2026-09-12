@@ -1,0 +1,64 @@
+language: en-US
+
+reviews:
+  profile: assertive
+  auto_review:
+    enabled: true
+    drafts: false
+  high_level_summary_instructions: |
+    Write all summaries in present tense.
+    Describe what the code does, not what it did.
+    Example: "This PR adds feature X" instead of "This PR added feature X"
+
+  path_instructions:
+    - path: '**/*'
+      instructions: |
+        ## Secrets and infrastructure must not be committed
+        This repository is public. Flag any real password, token, OTA
+        credential, WiFi credential, private key, hostname, domain, IP address,
+        internal URL, or account name. A placeholder such as `change-me` or
+        `my-boat.local` is fine; a real value is not. Vessel names and MMSIs are
+        ordinary test data.
+
+        ## Documentation drift risk
+        This repository is mostly documentation. Flag prose in a .md file that
+        duplicates code logic, hard-codes configuration values, or lists API
+        call sequences that fall out of sync as the referenced code changes.
+        Documentation should describe how things work conceptually. Build and
+        flash instructions that a user follows are fine; the risk is prose that
+        restates code or embeds values that live elsewhere.
+
+        ## Implementation status in documentation
+        Flag a .md file that records build narrative or progress ("Step 3:
+        implement X", "TODO: add Y", "currently implemented as Z"). That belongs
+        in PR descriptions or commit messages. Architecture and design rationale
+        in docs are fine.
+
+        ## Unchecked items in test plans
+        If a PR description or a .md file has a checklist with unchecked items,
+        flag it. Either the work is incomplete, or the checklist should be
+        removed before merge.
+
+        ## Echo comments
+        Flag any comment that merely restates what the code already says.
+        Request removal, or replacement with a comment that explains *why*, not
+        *what*.
+
+        ## Scope
+        Focus on files changed since main. Consider how the change interacts
+        with existing documentation, not only the diff in isolation.
+
+    - path: 'run'
+      instructions: |
+        ## Shell dispatcher conventions
+        `run` is a bash dispatcher with `#@ Description` and `#@ Category:`
+        docstrings and awk-based help generation. Flag a new subcommand that has
+        no `#@` docstring. Do not suggest a Makefile; this project does not use
+        one.
+
+    - path: '**/*.py'
+      instructions: |
+        ## Helper scripts
+        The Python helpers are standalone tools run by hand. Flag echo comments
+        and dead code. Do not require a package structure or a test suite for
+        them.
