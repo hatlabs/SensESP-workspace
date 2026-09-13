@@ -83,22 +83,30 @@ The board has pin assignments compatible with optional Ethernet PHY modules, but
 
 ## PlatformIO Configuration
 
-```ini
-[env:shesp32]
-platform = espressif32
-board = esp32dev
-framework = arduino
-board_build.partitions = min_spiffs.csv
-upload_speed = 2000000
-monitor_speed = 115200
+Flash `shesp32_espidf` on any device that talks to a TLS Signal K server. The `shesp32` env builds faster and is fine for compile checks, but its precompiled libraries ignore `sdkconfig.defaults`, so the device runs out of memory against a TLS server.
 
+```ini
+; Arduino compile-check env (fast build, no TLS support)
+[env:shesp32]
+extends = pioarduino, esp32
+build_flags =
+    ${pioarduino.build_flags}
+    ${esp32.build_flags}
+
+; Flash this one (ESP-IDF from source, TLS works)
+[env:shesp32_espidf]
+extends = env:shesp32
+framework = espidf, arduino
 lib_deps =
-    SignalK/SensESP @ ^3.2.0
-    ttlappalainen/NMEA2000-library @ ^4.17.2
-    NMEA2000_twai=https://github.com/skarlsson/NMEA2000_twai
+    ${env.lib_deps}
+board_build.embed_txtfiles =
+    managed_components/espressif__esp_insights/server_certs/https_server.crt
+    managed_components/espressif__esp_rainmaker/server_certs/rmaker_mqtt_server.crt
+    managed_components/espressif__esp_rainmaker/server_certs/rmaker_claim_service_server.crt
+    managed_components/espressif__esp_rainmaker/server_certs/rmaker_ota_server.crt
 ```
 
-Add `adafruit/Adafruit ADS1X15` if using an external ADC, or `adafruit/Adafruit SSD1306` for an OLED display.
+The shared `[env]`, `[pioarduino]`, and `[esp32]` sections come from the project template. See `ref/SensESP-project-template/platformio.ini` for the full layout. Add `adafruit/Adafruit ADS1X15` to the shared `[env]` `lib_deps` if using an external ADC, or `adafruit/Adafruit SSD1306` for an OLED display.
 
 ## Common Use Cases
 
