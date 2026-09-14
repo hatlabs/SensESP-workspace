@@ -111,8 +111,8 @@ Topics to cover:
 **Entry**: Architecture planned.
 
 **Actions**:
-1. Copy `ref/SensESP-project-template/` as the starting point.
-2. Configure `platformio.ini` for the target board and dependencies.
+1. Copy `ref/SensESP-project-template/` as the starting point, including `sdkconfig.defaults`, `sdkconfig.defaults.esp32c3`, `min_spiffs.csv`, `CMakeLists.txt`, `src/CMakeLists.txt` and `src/idf_component.yml` -- the `<board>_espidf` builds need all of them.
+2. In `platformio.ini`, set `default_envs` to the board's `<board>_espidf` env (`halmet_espidf`, `halser_espidf`, `shesp32_espidf`, `esp32dev_espidf`, `esp32c3_espidf`) and add the project's dependencies to the shared `[env]` `lib_deps`. The exception is `esp_websocket_client`: the `<board>_espidf` envs take it from `src/idf_component.yml` and `dependencies.lock`, while the arduino envs need the explicit 1.7.0 archive URL in their own `lib_deps` (see `AGENTS.md`, "Build Patterns"). Do not add the archive URL to shared `lib_deps`; that bypasses the lock in the espidf build. The plain `<board>` env stays as it is: it is the fast compile check, never the flashed build (see `AGENTS.md`, "Build, Flash, and Monitor").
 3. Write `src/main.cpp` following the planned architecture.
 4. Where feasible, write tests for transforms and logic in `test/`.
 5. Initialize git repo and commit the initial implementation.
@@ -130,9 +130,9 @@ Topics to cover:
 **Entry**: Code written or modified.
 
 **Actions**:
-1. Build with `pio run -e <env>`.
+1. Build with plain `pio run`. The project's `default_envs` is its `<board>_espidf` env; do not pass `-e <board>`, which selects the arduino compile-check build that cannot hold a TLS Signal K connection. The first `<board>_espidf` build downloads and compiles ESP-IDF and takes several minutes; later builds are incremental.
 2. Fix any compilation errors (explain them in plain language).
-3. Upload with `pio run -e <env> -t upload`.
+3. Upload with `pio run -t upload`.
 4. Handle upload failures (device not found, bootloader mode, wrong port).
 
 **Guidelines**:

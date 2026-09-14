@@ -14,11 +14,11 @@ Build the firmware, upload it to the connected device, and read serial output to
 
 - If a project name was provided, use `projects/<name>/`.
 - Otherwise, list projects in `projects/` and ask which one (or use the only one if there's just one).
-- Read the project's `platformio.ini` to identify the board and PlatformIO environment.
+- Read the project's `platformio.ini` to identify the board. The env to build and flash is its `default_envs`, the `<board>_espidf` variant; never pass `-e <board>`, which selects the arduino compile-check build (see `AGENTS.md`, "Build, Flash, and Monitor").
 
 ## Phase 1: Build
 
-1. Run `pio run -e <env>` from the project directory.
+1. Run `pio run` from the project directory.
 2. **If it succeeds**: Report the binary size and move to Phase 2.
 3. **If it fails**: Read the error output carefully.
    - Translate the error into plain language: "The code has a typo on line 42" not "undefined reference to `foo`."
@@ -33,7 +33,7 @@ Build the firmware, upload it to the connected device, and read serial output to
 2. If no device found:
    - Ask the user to connect the device via USB.
    - On WSL, explain usbipd-win passthrough.
-3. Run `pio run -e <env> -t upload`.
+3. Run `pio run -t upload`.
 4. **If upload fails**:
    - "Device not responding" → Ask user to hold the BOOT button while pressing RESET, then try again.
    - "Wrong port" → Try specifying the port with `--upload-port`.

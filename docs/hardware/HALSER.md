@@ -88,27 +88,30 @@ HALSER's primary feature is its serial interface versatility. All serial interfa
 
 ## PlatformIO Configuration
 
+Flash `halser_espidf` on any device that talks to a TLS Signal K server. The `halser` env builds faster and is fine for compile checks, but its precompiled libraries ignore `sdkconfig.defaults`, so the device runs out of memory against a TLS server.
+
 ```ini
+; Arduino compile-check env (fast build, no TLS support)
 [env:halser]
-platform = https://github.com/pioarduino/platform-espressif32/releases/download/53.03.13/platform-espressif32.zip
-board = esp32-c3-devkitm-1
-framework = arduino
-board_build.partitions = min_spiffs.csv
-upload_speed = 2000000
-monitor_speed = 115200
-
+extends = pioarduino, esp32c3
 build_flags =
-    -D SENSESP_BUTTON_PIN=9
-    -D PIN_RGB_LED=8
-    -D ARDUINO_USB_MODE=1
-    -D ARDUINO_USB_CDC_ON_BOOT=1
+    ${pioarduino.build_flags}
+    ${esp32c3.build_flags}
 
+; Flash this one (ESP-IDF from source, TLS works)
+[env:halser_espidf]
+extends = env:halser
+framework = espidf, arduino
 lib_deps =
-    SignalK/SensESP @ ^3.2.0
-    SensESP/NMEA0183 @ ^3.1.0
-    ttlappalainen/NMEA2000-library @ ^4.17.2
-    NMEA2000_twai=https://github.com/skarlsson/NMEA2000_twai
+    ${env.lib_deps}
+board_build.embed_txtfiles =
+    managed_components/espressif__esp_insights/server_certs/https_server.crt
+    managed_components/espressif__esp_rainmaker/server_certs/rmaker_mqtt_server.crt
+    managed_components/espressif__esp_rainmaker/server_certs/rmaker_claim_service_server.crt
+    managed_components/espressif__esp_rainmaker/server_certs/rmaker_ota_server.crt
 ```
+
+The shared `[env]`, `[pioarduino]`, and `[esp32c3]` sections come from the project template. See `ref/SensESP-project-template/platformio.ini` for the full layout.
 
 ## Common Use Cases
 
