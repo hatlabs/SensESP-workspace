@@ -31,6 +31,30 @@ Online docs: https://docs.hatlabs.fi/halmet/
 | 27 | Digital Input 3 | Optoisolated, Schmitt trigger |
 | 26 | Digital Input 4 | Optoisolated, Schmitt trigger |
 
+## GPIO Expansion Header
+
+**J201**, a 2x10 pin header, breaks out the 13 GPIOs the product page counts as available. The signals below come from `ESP32.kicad_sch` in [HALMET-hardware](https://github.com/hatlabs/HALMET-hardware), which is the canonical source; the online docs give the count but no pinout. The remaining header pins carry power and ground.
+
+| Signal | GPIO | Usable as an output |
+|--------|------|---------------------|
+| IO5 | 5 | Yes, but it is a strapping pin |
+| SENSOR_VP | 36 | No, input only |
+| SENSOR_VN | 39 | No, input only |
+| IO16 | 16 | Yes |
+| IO17 | 17 | Yes |
+| IO32 | 32 | Yes |
+| IO33 | 33 | Yes |
+| IO34 | 34 | No, input only |
+| IO35 | 35 | No, input only |
+| TDI | 12 | Yes, but it is a strapping pin (flash voltage) |
+| TCK | 13 | Yes |
+| TMS | 14 | Yes |
+| TDO | 15 | Yes, but it is a strapping pin |
+
+GPIO 32, 13, 14, 16 and 17 are the pins with no strapping or input-only caveat. `ref/HALMET-example-firmware` drives GPIO 33 as its test output.
+
+A 3.3 V signal from one of these pins drives the optoisolated digital inputs, so jumpering a header pin to a digital input gives a self-contained tacho test without an external signal source.
+
 ## Analog Inputs
 
 4 channels via **ADS1115** 16-bit ADC on I2C (address **0x4b**).
