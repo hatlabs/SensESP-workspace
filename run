@@ -46,6 +46,7 @@ HALSER-cv7-hwt3100-interface https://github.com/humppafreak/HALSER-cv7-hwt3100-i
 SH-wg-firmware             https://github.com/hatlabs/SH-wg-firmware.git              main
 signalk-halmet-vacuflush   https://github.com/joelkoz/signalk-halmet-vacuflush.git    main
 signalk-halmet-searay-system-monitor https://github.com/joelkoz/signalk-halmet-searay-system-monitor.git main
+HALSER-attitude-sensor     https://github.com/hatlabs/HALSER-attitude-sensor.git       main
 Morticia-eCompass          https://github.com/jrehm/Morticia-eCompass.git              main
 REPOS
 }
