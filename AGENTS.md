@@ -61,12 +61,11 @@ Three rules for it, because a snapshot is a liability the moment it is written:
 | HALMET | ESP32 | 4x 16-bit analog (0-33V), 4x digital, CAN/N2K, 1-Wire, I2C | 5-32V | `halmet` | `docs/hardware/HALMET.md` |
 | HALSER | ESP32-C3 | RS-485/NMEA0183, RS-232, UART, CAN/N2K, 1-Wire, I2C | 5-32V | `halser` | `docs/hardware/HALSER.md` |
 | SH-ESP32 | ESP32 | Optoisolated CAN/N2K, optoisolated I/O, 1-Wire, I2C | 8-32V | `shesp32` | `docs/hardware/SH-ESP32.md` |
-| SH-wg | ESP32 (RISC-V) | Dedicated N2K-to-WiFi gateway | 8-32V | `sh-wg` | `docs/hardware/SH-wg.md` |
 | Generic ESP32 | ESP32/C3/S3 | Varies by board -- user provides specs | Varies | `pioarduino_esp32` / `pioarduino_esp32c3` | `docs/hardware/GENERIC-ESP32.md` |
 
 When the user mentions a board, read the corresponding hardware doc for full pinouts and wiring guidance.
 
-The `PlatformIO env` column lists each board's arduino env as defined in `ref/SensESP-project-template/platformio.ini`. Each board has an arduino env and a `<board>_espidf` env that extends it: `halmet_espidf`, `halser_espidf`, `shesp32_espidf`, and for the generic boards `esp32dev_espidf` and `esp32c3_espidf` extending `pioarduino_esp32` and `pioarduino_esp32c3`. For any device that talks to a TLS Signal K server (all deployed devices), flash the `_espidf` env, never the arduino env -- see "Build, Flash, and Monitor" below. SH-wg runs its own firmware, `SH-wg-firmware`, which defines its own env.
+The `PlatformIO env` column lists each board's arduino env as defined in `ref/SensESP-project-template/platformio.ini`. Each board has an arduino env and a `<board>_espidf` env that extends it: `halmet_espidf`, `halser_espidf`, `shesp32_espidf`, and for the generic boards `esp32dev_espidf` and `esp32c3_espidf` extending `pioarduino_esp32` and `pioarduino_esp32c3`. For any device that talks to a TLS Signal K server (all deployed devices), flash the `_espidf` env, never the arduino env -- see "Build, Flash, and Monitor" below.
 
 ## Reference Repository Index
 
@@ -98,7 +97,6 @@ The `PlatformIO env` column lists each board's arduino env as defined in `ref/Se
 | `HALSER-wind-interface` | Autonnic A5120 wind interface: `NMEA0183IO` reading on the main loop, OLED display, software reference-angle offset with host tests, dual config storage |
 | `HALSER-cv7-wind-interface` | HALSER with an LCJ Capteurs CV7 wind instrument: software-applied reference angle offset for a transmit-only sensor |
 | `HALSER-cv7-hwt3100-interface` | Adds a WitMotion HWT3100 compass over Modbus RTU, UDP NMEA 0183 broadcast, and live enable/disable toggles per input and output -- untested on hardware, read as a pattern source only |
-| `SH-wg-firmware` | WiFi gateway: N2K/NMEA0183, TCP/UDP streaming, SeaSmart |
 | `signalk-halmet-vacuflush` | HALMET: vacuflush pump monitoring, Signal K PUT requests, custom transforms |
 | `signalk-halmet-searay-system-monitor` | HALMET: bilge pump monitoring, analog threshold sensors, system monitoring |
 | `HALSER-attitude-sensor` | ICM-20948 DMP attitude: gravity-derived bow and level calibration covering all 24 mounting orientations, rate of turn as angular velocity projected onto gravity, PGN 127257 and 127251. The calibration math is Arduino-free and host-tested |

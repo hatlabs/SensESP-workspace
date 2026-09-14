@@ -31,48 +31,18 @@ This is for the standard ESP32-DevKitC with ESP32-WROOM-32 module. Other boards 
 
 ## PlatformIO Configuration
 
-### ESP32
+Copy `ref/SensESP-project-template` and keep its environments rather than writing an ini from scratch. The template already carries the two-environment layout, `sdkconfig.defaults`, and the `esp_websocket_client` sourcing that a hand-written `[env:esp32dev]` block gets wrong.
 
-```ini
-[env:esp32dev]
-platform = espressif32
-board = esp32dev
-framework = arduino
-monitor_speed = 115200
+| Generic board | Flash this | Compile check only |
+|---------------|------------|--------------------|
+| ESP32 | `esp32dev_espidf` | `pioarduino_esp32` |
+| ESP32-C3 | `esp32c3_espidf` | `pioarduino_esp32c3` |
 
-lib_deps =
-    SignalK/SensESP @ ^3.2.0
-```
+Set `default_envs` to match your board. Flash the `_espidf` environment on any device that talks to a TLS Signal K server: it builds ESP-IDF from source, which is what makes `sdkconfig.defaults` authoritative and enables the dynamic mbedTLS buffers the connection needs. The plain environment ignores `sdkconfig.defaults`, so against a TLS server the device boots, joins WiFi, and Signal K stays Disconnected with `mbedtls_ssl_setup` failing at `-0x7F00`.
 
-### ESP32-C3
+The template's board sections carry the board-specific parts already -- for the C3, `board = esp32-c3-devkitm-1` with `-D ARDUINO_USB_MODE=1` and `-D ARDUINO_USB_CDC_ON_BOOT=1` for the CDC USB port. Add your sensor libraries to the shared `[env]` `lib_deps`; the per-board sections need nothing.
 
-```ini
-[env:esp32c3]
-platform = espressif32
-board = esp32-c3-devkitm-1
-framework = arduino
-monitor_speed = 115200
-
-build_flags =
-    -D ARDUINO_USB_MODE=1
-    -D ARDUINO_USB_CDC_ON_BOOT=1
-
-lib_deps =
-    SignalK/SensESP @ ^3.2.0
-```
-
-### ESP32-S3
-
-```ini
-[env:esp32s3]
-platform = espressif32
-board = esp32-s3-devkitc-1
-framework = arduino
-monitor_speed = 115200
-
-lib_deps =
-    SignalK/SensESP @ ^3.2.0
-```
+**The template has no ESP32-S3 environment.** For an S3, add a board section modelled on the ESP32 one with `board = esp32-s3-devkitc-1`, and an `esp32s3_espidf` environment alongside the others. Note that the S3's PWM channel numbering differs from the ESP32's ([template issue 9](https://github.com/SensESP/SensESP-project-template/issues/9)).
 
 ## What Generic Boards Lack
 

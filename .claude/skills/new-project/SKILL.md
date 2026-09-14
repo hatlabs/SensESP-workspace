@@ -31,7 +31,6 @@ Interview the user to understand what they want to build. Ask **one question at 
    - HALMET (analog/digital inputs, engine monitoring, tank levels)
    - HALSER (serial interfaces, NMEA 0183, AIS)
    - SH-ESP32 (general purpose with CAN/N2K)
-   - SH-wg (WiFi gateway)
    - Generic ESP32 board (ask them to describe it)
 3. **Sensors**: What sensors or inputs will you connect? (temperature senders, pressure senders, tank level senders, GPS, wind instruments, etc.)
 4. **Outputs**: Where should the data go? (Signal K server via WiFi, NMEA 2000 network, both, display, alarms)
