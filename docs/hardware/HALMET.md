@@ -26,10 +26,34 @@ Online docs: https://docs.hatlabs.fi/halmet/
 | 21 | I2C SDA | Shared bus |
 | 22 | I2C SCL | Shared bus |
 | 4 | 1-Wire | DS18B20 temperature sensors |
-| 23 | Digital Input 1 | Optoisolated, Schmitt trigger |
-| 25 | Digital Input 2 | Optoisolated, Schmitt trigger |
-| 27 | Digital Input 3 | Optoisolated, Schmitt trigger |
-| 26 | Digital Input 4 | Optoisolated, Schmitt trigger |
+| 23 | Digital Input 1 | Isolated, Schmitt trigger |
+| 25 | Digital Input 2 | Isolated, Schmitt trigger |
+| 27 | Digital Input 3 | Isolated, Schmitt trigger |
+| 26 | Digital Input 4 | Isolated, Schmitt trigger |
+
+## GPIO Expansion Header
+
+**J201**, a 2x10 pin header, breaks out the 13 GPIOs the product page counts as available. The signals below were read from [`ESP32.kicad_sch` at `e8bffda`](https://github.com/hatlabs/HALMET-hardware/blob/e8bffda7a83aede84c1d496083c84866a5130c25/ESP32.kicad_sch), which is the canonical source; the online docs give the count but no pinout. The remaining header pins carry power and ground. Re-read the schematic at a newer revision before trusting this table against a later board.
+
+| Signal | GPIO | Usable as an output |
+|--------|------|---------------------|
+| IO5 | 5 | Yes, but it is a strapping pin |
+| SENSOR_VP | 36 | No, input only |
+| SENSOR_VN | 39 | No, input only |
+| IO16 | 16 | Yes |
+| IO17 | 17 | Yes |
+| IO32 | 32 | Yes |
+| IO33 | 33 | Yes |
+| IO34 | 34 | No, input only |
+| IO35 | 35 | No, input only |
+| TDI | 12 | Yes, but it is a strapping pin (flash voltage) |
+| TCK | 13 | Yes |
+| TMS | 14 | Yes |
+| TDO | 15 | Yes, but it is a strapping pin |
+
+GPIO 13, 14, 16, 17, 32 and 33 are the pins with no strapping or input-only caveat. `ref/HALMET-example-firmware` drives GPIO 33 as its test output.
+
+Driving a digital input from one of these pins is possible -- a 3.3 V swing is enough for the input stage -- and a test rig wired that way reads a tacho signal generated on the header. The wiring is not documented here: the digital inputs sit on their own ground domain behind the isolation barrier, so the signal and its return both have to be accounted for, and this page has not traced that path. Check the schematic before wiring one up.
 
 ## Analog Inputs
 
@@ -44,10 +68,12 @@ Online docs: https://docs.hatlabs.fi/halmet/
 
 ## Digital Inputs
 
-4 optoisolated inputs with Schmitt trigger for noise immunity.
+4 inputs with a Schmitt trigger (74LVC1G17) for noise immunity, on the isolated input ground domain.
 
-- **Voltage range**: +/- 30V max
-- **Active**: Input is considered active when voltage is applied (polarity independent due to optoisolation)
+- **Trigger level**: about +1.5V. Above that the input reads active.
+- **Voltage range**: +/- 30V max. A 20k series resistor and BAT54S clamp diodes give that rating; it is what the input survives, not a range it responds to.
+- **Polarity matters**: a negative input is clamped and reads inactive. Wire the signal to the input and its return to the isolated input ground.
+- **Isolation**: galvanic, through a digital isolator, not an optocoupler. Earlier revisions of this page said optoisolated and polarity independent; both were wrong.
 - **Use cases**: RPM/tacho signals, alarm switches, bilge pump status, ignition detection
 
 ## CAN / NMEA 2000
@@ -120,7 +146,7 @@ Same wiring as temperature sender. The resistance-to-pressure mapping depends on
 Same wiring pattern. Enable CCS jumper. Calibrate using known empty and full resistance values.
 
 ### RPM / Tacho Signal
-Connect the tacho signal wire to a digital input. The signal ground connects to the isolated input ground. Use the `DigitalInputCounter` class in SensESP for pulse counting.
+Connect the tacho signal wire to a digital input. The signal ground connects to the isolated input ground. Use `DigitalInputPcntCounter` for pulse counting, not `DigitalInputCounter`: the interrupt-driven counter drops edges under WiFi and NMEA 2000 load and reads low, while the PCNT peripheral counts in hardware. See `ref/HALMET-example-firmware/src/halmet_digital.cpp`.
 
 ### NMEA 2000
 Connect CAN H and CAN L from the NMEA 2000 backbone. Power is also supplied through this connector.
