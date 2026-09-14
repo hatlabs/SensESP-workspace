@@ -33,7 +33,7 @@ Online docs: https://docs.hatlabs.fi/halmet/
 
 ## GPIO Expansion Header
 
-**J201**, a 2x10 pin header, breaks out the 13 GPIOs the product page counts as available. The signals below come from `ESP32.kicad_sch` in [HALMET-hardware](https://github.com/hatlabs/HALMET-hardware), which is the canonical source; the online docs give the count but no pinout. The remaining header pins carry power and ground.
+**J201**, a 2x10 pin header, breaks out the 13 GPIOs the product page counts as available. The signals below were read from [`ESP32.kicad_sch` at `e8bffda`](https://github.com/hatlabs/HALMET-hardware/blob/e8bffda7a83aede84c1d496083c84866a5130c25/ESP32.kicad_sch), which is the canonical source; the online docs give the count but no pinout. The remaining header pins carry power and ground. Re-read the schematic at a newer revision before trusting this table against a later board.
 
 | Signal | GPIO | Usable as an output |
 |--------|------|---------------------|
@@ -51,9 +51,9 @@ Online docs: https://docs.hatlabs.fi/halmet/
 | TMS | 14 | Yes |
 | TDO | 15 | Yes, but it is a strapping pin |
 
-GPIO 32, 13, 14, 16 and 17 are the pins with no strapping or input-only caveat. `ref/HALMET-example-firmware` drives GPIO 33 as its test output.
+GPIO 13, 14, 16, 17, 32 and 33 are the pins with no strapping or input-only caveat. `ref/HALMET-example-firmware` drives GPIO 33 as its test output.
 
-A 3.3 V signal from one of these pins drives the optoisolated digital inputs, so jumpering a header pin to a digital input gives a self-contained tacho test without an external signal source.
+Driving a digital input from one of these pins is possible -- a 3.3 V swing is enough for the input stage -- and a test rig wired that way reads a tacho signal generated on the header. The wiring is not documented here: the digital inputs sit on their own ground domain behind the isolation barrier, so the signal and its return both have to be accounted for, and this page has not traced that path. Check the schematic before wiring one up.
 
 ## Analog Inputs
 
