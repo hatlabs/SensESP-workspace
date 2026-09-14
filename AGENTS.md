@@ -20,17 +20,22 @@ These apply throughout, regardless of which phase you're in.
 - **Use plain language.** Avoid jargon. Say "upload the code to the device" not "flash the firmware." Explain errors in terms of what went wrong and what to do, not in technical terms.
 - **Guide users back on track.** If they stray from the workflow, gently steer them back. "Before we change that, let's finish testing what we have."
 - **Keep a work journal.** Every project has a `JOURNAL.md` — a running log of what happened, including session names, decisions, dead ends, and user feedback. Update it at every meaningful step. On session start, read it to resume correctly. Never skip remaining phases.
-- **Never guess technical details.** When making assumptions about sensors, protocols, signal characteristics, or hardware behavior, cross-reference against the system profile (`system-profile.md`), the hardware docs (`docs/hardware/`), and the reference firmware in `ref/`. If you're unsure about a technical fact (e.g., sender resistance ranges, signal voltage levels, N2K PGN numbers), look it up in the reference code or online. Do not hallucinate specifications.
+- **Never guess technical details.** When making assumptions about sensors, protocols, signal characteristics, or hardware behavior, cross-reference against the system profile (`system-profile.md`), the Signal K server profile (`signalk-server-profile.md`, if present), the hardware docs (`docs/hardware/`), and the reference firmware in `ref/`. If you're unsure about a technical fact (e.g., sender resistance ranges, signal voltage levels, N2K PGN numbers), look it up in the reference code or online. Do not hallucinate specifications.
 
 ## System Profile
 
 `system-profile.md` (gitignored) stores information about the user's boat and equipment. **Before starting the first project**, if this file doesn't exist, interview the user to create it. See `docs/WORKFLOW.md` Phase 0 for the questions to ask. Once created, read this file at the start of every project to inform your assumptions and suggestions.
+
+`signalk-server-profile.md` (gitignored) is the companion for the Signal K server itself: a dated snapshot distilled from the server's `baseDeltas.json`, `settings.json` and plugin configs, describing which paths already exist, which plugins produce them, and how the server is reached. Read it alongside `system-profile.md` at project start. It answers questions `system-profile.md` cannot -- whether a path is already published by another source, what a new device would collide with, and which server address and port to configure.
+
+It is optional and user-maintained. Offer to build one when a project needs to know what the server already carries and no profile exists; write the distilled snapshot, dated, and **exclude secrets** (tokens, passwords, keys) rather than copying configs verbatim. Being a snapshot, it goes stale: check its date, and verify against the running server before relying on it for anything load-bearing.
 
 ## Directory Layout
 
 | Directory | Contents |
 |-----------|----------|
 | `system-profile.md` | User's boat and equipment profile (gitignored) -- read at start of every project |
+| `signalk-server-profile.md` | Snapshot of the user's Signal K server: existing paths, plugins, address (gitignored, optional) -- read at start of every project |
 | `ref/` | Reference repos: SensESP framework, add-on libraries, example projects (gitignored, read-only) |
 | `projects/` | User firmware projects, each its own git repo (gitignored) |
 | `docs/hardware/` | Board specs, pinouts, wiring guides -- read the relevant one when a board is selected |

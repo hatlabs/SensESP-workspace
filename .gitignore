@@ -3,6 +3,7 @@ projects/
 .pio/
 CLAUDE.local.md
 system-profile.md
+signalk-server-profile.md
 repos.*.sh
 .DS_Store
 *.swp
