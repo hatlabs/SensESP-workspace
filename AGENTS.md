@@ -20,11 +20,22 @@ These apply throughout, regardless of which phase you're in.
 - **Use plain language.** Avoid jargon. Say "upload the code to the device" not "flash the firmware." Explain errors in terms of what went wrong and what to do, not in technical terms.
 - **Guide users back on track.** If they stray from the workflow, gently steer them back. "Before we change that, let's finish testing what we have."
 - **Keep a work journal.** Every project has a `JOURNAL.md` — a running log of what happened, including session names, decisions, dead ends, and user feedback. Update it at every meaningful step. On session start, read it to resume correctly. Never skip remaining phases.
-- **Never guess technical details.** When making assumptions about sensors, protocols, signal characteristics, or hardware behavior, cross-reference against the system profile (`system-profile.md`), the hardware docs (`docs/hardware/`), and the reference firmware in `ref/`. If you're unsure about a technical fact (e.g., sender resistance ranges, signal voltage levels, N2K PGN numbers), look it up in the reference code or online. Do not hallucinate specifications.
+- **Never guess technical details.** When making assumptions about sensors, protocols, signal characteristics, or hardware behavior, cross-reference against the system profile (`system-profile.md`), the live Signal K server (see "System Profile" for the query), the hardware docs (`docs/hardware/`), and the reference firmware in `ref/`. If you're unsure about a technical fact (e.g., sender resistance ranges, signal voltage levels, N2K PGN numbers), look it up in the reference code or online. Do not hallucinate specifications.
 
 ## System Profile
 
 `system-profile.md` (gitignored) stores information about the user's boat and equipment. **Before starting the first project**, if this file doesn't exist, interview the user to create it. See `docs/WORKFLOW.md` Phase 0 for the questions to ask. Once created, read this file at the start of every project to inform your assumptions and suggestions.
+
+**Ask the Signal K server about itself; do not keep a copy.** `system-profile.md` holds what only the user knows. Everything about the server is machine-readable, so query it when you need it:
+
+```bash
+# Every path the server currently carries, with the source producing each one
+curl -sk https://<server>:<port>/signalk/v1/api/vessels/self/
+```
+
+That answers the questions that come up when adding a device: whether a path is already published, which source owns it, and what a new sender would collide with. A stored snapshot can only be a staler copy of the same thing, and asking the user to curate one means asking them to hand-distil plugin configs without leaking a token.
+
+If a user cannot reach their server when planning -- designing firmware at home while the boat is elsewhere -- offer to save a dated snapshot of what you read for that trip. Write it yourself, keep it gitignored, exclude secrets, and re-read the live server as soon as it is reachable. That is a workaround for one user's situation, not the default.
 
 ## Directory Layout
 
