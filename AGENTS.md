@@ -20,17 +20,35 @@ These apply throughout, regardless of which phase you're in.
 - **Use plain language.** Avoid jargon. Say "upload the code to the device" not "flash the firmware." Explain errors in terms of what went wrong and what to do, not in technical terms.
 - **Guide users back on track.** If they stray from the workflow, gently steer them back. "Before we change that, let's finish testing what we have."
 - **Keep a work journal.** Every project has a `JOURNAL.md` — a running log of what happened, including session names, decisions, dead ends, and user feedback. Update it at every meaningful step. On session start, read it to resume correctly. Never skip remaining phases.
-- **Never guess technical details.** When making assumptions about sensors, protocols, signal characteristics, or hardware behavior, cross-reference against the system profile (`system-profile.md`), the hardware docs (`docs/hardware/`), and the reference firmware in `ref/`. If you're unsure about a technical fact (e.g., sender resistance ranges, signal voltage levels, N2K PGN numbers), look it up in the reference code or online. Do not hallucinate specifications.
+- **Never guess technical details.** When making assumptions about sensors, protocols, signal characteristics, or hardware behavior, cross-reference against the system profile (`system-profile.md`), the live Signal K server (see "System Profile" for the query), the hardware docs (`docs/hardware/`), and the reference firmware in `ref/`. If you're unsure about a technical fact (e.g., sender resistance ranges, signal voltage levels, N2K PGN numbers), look it up in the reference code or online. Do not hallucinate specifications.
 
 ## System Profile
 
 `system-profile.md` (gitignored) stores information about the user's boat and equipment. **Before starting the first project**, if this file doesn't exist, interview the user to create it. See `docs/WORKFLOW.md` Phase 0 for the questions to ask. Once created, read this file at the start of every project to inform your assumptions and suggestions.
+
+**Ask the Signal K server about itself; do not keep a copy.** `system-profile.md` holds what only the user knows. Everything about the server is machine-readable, so query it when you need it:
+
+```bash
+# Every path the server currently carries, with the source producing each one
+curl -sk https://<server>:<port>/signalk/v1/api/vessels/self/
+```
+
+That answers the questions that come up when adding a device: whether a path is already published, which source owns it, and what a new sender would collide with. A stored snapshot can only be a staler copy of the same thing, and asking the user to curate one means asking them to hand-distil plugin configs without leaking a token.
+
+**Fallback when the server is unreachable.** Some users plan firmware away from the boat and cannot query the server at all. For them, `signalk-server-profile.md` (gitignored) holds a dated snapshot of the same information: the paths the server carries, the source producing each, and the server's address and port. Offer to write it from a live read while the server is reachable, so the next session has something to work from when it is not.
+
+Three rules for it, because a snapshot is a liability the moment it is written:
+
+- Write it yourself from a live read. Do not ask the user to distil `settings.json` or plugin configs by hand; that is how a token ends up in a file.
+- Date it, and say in the file that it is a snapshot. Check that date before trusting it.
+- Prefer the live server whenever it answers. The snapshot is what you fall back to, never what you reach for first.
 
 ## Directory Layout
 
 | Directory | Contents |
 |-----------|----------|
 | `system-profile.md` | User's boat and equipment profile (gitignored) -- read at start of every project |
+| `signalk-server-profile.md` | Dated snapshot of the Signal K server (gitignored, optional) -- fallback for when the server cannot be queried |
 | `ref/` | Reference repos: SensESP framework, add-on libraries, example projects (gitignored, read-only) |
 | `projects/` | User firmware projects, each its own git repo (gitignored) |
 | `docs/hardware/` | Board specs, pinouts, wiring guides -- read the relevant one when a board is selected |
