@@ -77,12 +77,13 @@ The `PlatformIO env` column lists each board's arduino env as defined in `ref/Se
 | `HALMET-example-firmware` | Basic HALMET: ADS1115 analog inputs, digital inputs |
 | `HALSER-default-firmware` | N2K gateway with test mode selection |
 | `HALSER-ais-interface` | Complex NMEA0183 parsing on the main loop, AIS decoder, bidirectional Signal K, `CountingNMEA2000` (canonical copy), two-env build layout |
-| `HALSER-wind-interface` | Wind instrument interface, dual config storage |
+| `HALSER-wind-interface` | Autonnic A5120 wind interface: `NMEA0183IO` reading on the main loop, OLED display, software reference-angle offset with host tests, dual config storage |
 | `HALSER-cv7-wind-interface` | HALSER with an LCJ Capteurs CV7 wind instrument: software-applied reference angle offset for a transmit-only sensor |
 | `HALSER-cv7-hwt3100-interface` | Adds a WitMotion HWT3100 compass over Modbus RTU, UDP NMEA 0183 broadcast, and live enable/disable toggles per input and output -- untested on hardware, read as a pattern source only |
 | `SH-wg-firmware` | WiFi gateway: N2K/NMEA0183, TCP/UDP streaming, SeaSmart |
 | `signalk-halmet-vacuflush` | HALMET: vacuflush pump monitoring, Signal K PUT requests, custom transforms |
 | `signalk-halmet-searay-system-monitor` | HALMET: bilge pump monitoring, analog threshold sensors, system monitoring |
+| `HALSER-attitude-sensor` | ICM-20948 DMP attitude: gravity-derived bow and level calibration covering all 24 mounting orientations, rate of turn as angular velocity projected onto gravity, PGN 127257 and 127251. The calibration math is Arduino-free and host-tested |
 | `Morticia-eCompass` | SH-ESP32: 9DOF compass/attitude sensor (FXOS8700CQ + FXAS21002C), magnetic deviation |
 
 ## Project Conventions
@@ -181,6 +182,6 @@ Common path patterns for marine data:
 - **Partition tables**: The default 4 MB partition table doesn't leave enough space for OTA updates. Use `min_spiffs.csv` to maximize application space. Devices with larger flash (e.g., HALMET with 16 MB) can use roomier partition schemes like `default_8MB.csv`.
 - **GPIO pinouts vary across ESP32 variants**: ESP32, ESP32-C3, ESP32-S3, etc. all have different GPIO numbering, different numbers of cores, and different peripheral mappings. Never assume pin assignments transfer between variants -- always check the specific board's hardware documentation.
 - **Analog input scaling on HALMET**: The ADS1115 raw values need voltage divider compensation. Check `ref/HALMET-example-firmware` for the correct scaling factors.
-- **NMEA 2000 address**: The NMEA2000 library's ISO address claim resolves a collision at runtime, but distinct defaults keep status pages and logs readable, so give each new device an unused one. Defaults in use: gnss-rtk-compass 25, HALMET 71, wind 72, HALSER-default-firmware 73, ais 74.
+- **NMEA 2000 address**: The NMEA2000 library's ISO address claim resolves a collision at runtime, but distinct defaults keep status pages and logs readable, so give each new device an unused one. Each firmware's own AGENTS.md states its device's address and is authoritative; this list is a convenience copy, so check it against the repo before relying on it. Defaults in use: gnss-rtk-compass 25, HALMET 71, wind 72, HALSER-default-firmware 73, ais 74, attitude 75.
 - **Event loop**: SensESP creates its own `reactesp::EventLoop` instance internally. Do **not** create a separate `reactesp::ReactESP app;` and call `app.tick()` -- that ticks a different event loop and SensESP's internals (SK connection, button handler, etc.) will never run. Always use `event_loop()->tick()` in `loop()` and `event_loop()->onRepeat(...)` etc. for scheduling. See `ref/HALMET-example-firmware/src/main.cpp` for the correct pattern.
 - **SKWSClient auth token**: The `auth_token_` member is `protected`, not public. To reuse the SK auth token for HTTP API calls, use a subclass accessor pattern (see `halmet-alert-silence` PoC). The token is obtained automatically through the SK access request flow.
