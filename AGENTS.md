@@ -35,13 +35,20 @@ curl -sk https://<server>:<port>/signalk/v1/api/vessels/self/
 
 That answers the questions that come up when adding a device: whether a path is already published, which source owns it, and what a new sender would collide with. A stored snapshot can only be a staler copy of the same thing, and asking the user to curate one means asking them to hand-distil plugin configs without leaking a token.
 
-If a user cannot reach their server when planning -- designing firmware at home while the boat is elsewhere -- offer to save a dated snapshot of what you read for that trip. Write it yourself, keep it gitignored, exclude secrets, and re-read the live server as soon as it is reachable. That is a workaround for one user's situation, not the default.
+**Fallback when the server is unreachable.** Some users plan firmware away from the boat and cannot query the server at all. For them, `signalk-server-profile.md` (gitignored) holds a dated snapshot of the same information: the paths the server carries, the source producing each, and the server's address and port. Offer to write it from a live read while the server is reachable, so the next session has something to work from when it is not.
+
+Three rules for it, because a snapshot is a liability the moment it is written:
+
+- Write it yourself from a live read. Do not ask the user to distil `settings.json` or plugin configs by hand; that is how a token ends up in a file.
+- Date it, and say in the file that it is a snapshot. Check that date before trusting it.
+- Prefer the live server whenever it answers. The snapshot is what you fall back to, never what you reach for first.
 
 ## Directory Layout
 
 | Directory | Contents |
 |-----------|----------|
 | `system-profile.md` | User's boat and equipment profile (gitignored) -- read at start of every project |
+| `signalk-server-profile.md` | Dated snapshot of the Signal K server (gitignored, optional) -- fallback for when the server cannot be queried |
 | `ref/` | Reference repos: SensESP framework, add-on libraries, example projects (gitignored, read-only) |
 | `projects/` | User firmware projects, each its own git repo (gitignored) |
 | `docs/hardware/` | Board specs, pinouts, wiring guides -- read the relevant one when a board is selected |
