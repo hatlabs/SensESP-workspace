@@ -9,7 +9,7 @@ Before using this workspace, you need:
 
 2. **A computer** running macOS, Linux, or Windows (with WSL).
 
-3. **An ESP32 device** -- either a Hat Labs board (HALMET, HALSER, SH-ESP32, SH-wg) or any generic ESP32 development board.
+3. **An ESP32 device** -- either a Hat Labs board (HALMET, HALSER, SH-ESP32) or any generic ESP32 development board.
 
 4. **A USB cable** to connect your device to your computer.
 
@@ -62,7 +62,6 @@ Claude will:
 - **HALMET** -- Marine Engine and Tank Interface. 4 analog inputs (16-bit, 0-33V), 4 digital inputs, NMEA 2000, 1-Wire, I2C.
 - **HALSER** -- Serial Interface. RS-485 (NMEA 0183), RS-232, UART, NMEA 2000, 1-Wire, I2C.
 - **SH-ESP32** -- Sailor Hat for ESP32. General-purpose with optoisolated CAN/NMEA 2000 and I/O.
-- **SH-wg** -- WiFi Gateway. Dedicated NMEA 2000 to WiFi bridge.
 
 ### Generic ESP32 Boards
 Any ESP32, ESP32-C3, or ESP32-S3 development board. You'll need to provide details about your board's pinout and features.
